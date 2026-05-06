@@ -37,9 +37,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const fetchTotalCount = async () => {
     try {
       const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1");
+      if (!response.ok) throw new Error("Erro ao buscar contagem");
       const data = await response.json();
-      totalCountSpan.textContent = data.count;
+      if (data.count) {
+        totalCountSpan.textContent = data.count.toLocaleString("pt-BR");
+      } else {
+        totalCountSpan.textContent = "1000+";
+      }
     } catch (e) {
+      console.error("Erro ao buscar contagem:", e);
       totalCountSpan.textContent = "1000+";
     }
   };
@@ -48,30 +54,54 @@ document.addEventListener("DOMContentLoaded", () => {
     const card = document.createElement("div");
     card.classList.add("pokemon-card");
 
+    // Validações para dados seguros
+    if (!pokemonData || !pokemonData.types || pokemonData.types.length === 0) {
+      return; // Pula pokémon inválido
+    }
+
     // Descobre o tipo primário para definir a cor
     const mainType = pokemonData.types[0].type.name;
     const themeColor = typeColors[mainType] || "#aeb5c0"; // Cor fallback
 
-    // Busca a arte oficial (grande) e o ícone de geração 8 (pequeno no canto)
-    const mainImage =
-      pokemonData.sprites.other["official-artwork"].front_default;
-    // Tenta pegar a mini sprite, se não tiver usa a sprite normal frontal
-    const miniSprite =
-      pokemonData.sprites.versions["generation-viii"]?.icons?.front_default ||
-      pokemonData.sprites.front_default;
+    // Busca a arte oficial (grande) com fallbacks
+    let mainImage =
+      pokemonData.sprites?.other?.["official-artwork"]?.front_default;
+    if (!mainImage) {
+      mainImage = pokemonData.sprites?.front_default;
+    }
+    if (!mainImage) {
+      mainImage = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData.id}.png`;
+    }
+
+    // Tenta pegar a mini sprite, com fallbacks
+    let miniSprite =
+      pokemonData.sprites?.versions?.["generation-viii"]?.icons?.front_default;
+    if (!miniSprite) {
+      miniSprite = pokemonData.sprites?.front_default;
+    }
+    if (!miniSprite) {
+      miniSprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData.id}.png`;
+    }
 
     // Define a cor como uma variável CSS inline para ser usada no style.css
     card.style.setProperty("--type-color", themeColor);
 
+    // Capitalize name
+    const capitalizedName =
+      pokemonData.name.charAt(0).toUpperCase() + pokemonData.name.slice(1);
+
     card.innerHTML = `
-      <span class="poke-id">#${pokemonData.id}</span>
+      <span class="poke-id">#${String(pokemonData.id).padStart(3, "0")}</span>
       <div class="poke-img-container">
         <div class="poke-circle-bg"></div>
-        <img src="${mainImage}" alt="${pokemonData.name}" class="poke-main-img">
+        <img src="${mainImage}" alt="${pokemonData.name}" class="poke-main-img" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData.id}.png'">
       </div>
       <div class="poke-footer">
-        <h3 class="poke-name">${pokemonData.name}</h3>
-        <img src="${miniSprite}" alt="${pokemonData.name} icon" class="poke-mini-sprite">
+        <div class="poke-info">
+          <h3 class="poke-name">${capitalizedName}</h3>
+          <span class="poke-type">${mainType}</span>
+        </div>
+        <img src="${miniSprite}" alt="${pokemonData.name} icon" class="poke-mini-sprite" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonData.id}.png'">
       </div>
     `;
 
@@ -95,18 +125,37 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch(
         `https://pokeapi.co/api/v2/pokemon?offset=${currentOffset}&limit=${limit}`,
       );
+
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.status}`);
+      }
+
       const data = await response.json();
 
+      if (!data.results || data.results.length === 0) {
+        throw new Error("Nenhum Pokémon encontrado");
+      }
+
       const fetchPromises = data.results.map((pokemon) =>
-        fetch(pokemon.url).then((res) => res.json()),
+        fetch(pokemon.url)
+          .then((res) => {
+            if (!res.ok) throw new Error(`Erro ao buscar ${pokemon.name}`);
+            return res.json();
+          })
+          .catch((err) => {
+            console.error(`Erro ao carregar ${pokemon.name}:`, err);
+            return null; // Retorna null se houver erro
+          }),
       );
 
       const allPokemonData = await Promise.all(fetchPromises);
-      allPokemonData.forEach(createPokemonCard);
+      // Filtra null values (pokémons que falharam) e cria cards apenas dos válidos
+      allPokemonData.filter(Boolean).forEach(createPokemonCard);
 
       currentOffset += limit; // Prepara para a próxima página
     } catch (error) {
-      alert("Erro ao carregar Pokémons.");
+      console.error("Erro ao carregar Pokémons:", error);
+      pokemonList.innerHTML += `<p style="color: #fb6c6c; text-align: center; width: 100%;">Erro ao carregar Pokémons. Tente novamente.</p>`;
     } finally {
       toggleLoading(false);
     }
@@ -132,12 +181,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch(
         `https://pokeapi.co/api/v2/pokemon/${query}`,
       );
-      if (!response.ok) throw new Error("Não encontrado");
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error("Não encontrado");
+        }
+        throw new Error(`Erro na API: ${response.status}`);
+      }
 
       const pokemonData = await response.json();
+
+      if (!pokemonData) {
+        throw new Error("Dados inválidos recebidos");
+      }
+
       createPokemonCard(pokemonData);
     } catch (error) {
-      pokemonList.innerHTML = `<p style="color: white; text-align: center; width: 100%;">Pokémon não encontrado :(</p>`;
+      console.error("Erro na busca:", error);
+      pokemonList.innerHTML = `<p style="color: #fb6c6c; text-align: center; width: 100%;">Pokémon não encontrado :(</p>`;
     } finally {
       toggleLoading(false);
     }
