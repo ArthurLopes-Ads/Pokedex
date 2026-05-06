@@ -1,0 +1,270 @@
+/* Reset e Cores Globais baseadas na imagem */
+:root {
+  --bg-body: #10141e;
+  --bg-app: #1c2436;
+  --bg-card: #2b364a;
+  --bg-input: #10141e;
+  --color-primary: #f91363; /* Rosa/Magenta do botão */
+  --color-primary-hover: #d80f55;
+  --text-main: #ffffff;
+  --text-muted: #8b95a6;
+  --nav-btn-bg: #2b364a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+/* Container Principal (A "Janela" do App) */
+.app-container {
+  background-color: var(--bg-app);
+  width: 100%;
+  max-width: 1200px;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.nav-btn {
+  background-color: var(--nav-btn-bg);
+  color: var(--text-muted);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: all 0.2s;
+}
+
+.nav-left .nav-btn {
+  margin-left: 0;
+}
+.nav-btn:hover {
+  color: var(--text-main);
+  background-color: #38455e;
+}
+
+/* Sprites Decorativos */
+.decorative-sprites {
+  display: flex;
+  gap: 0px;
+  margin-bottom: 0.5rem;
+}
+.decorative-sprites img {
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+}
+
+/* Barra de Pesquisa */
+.search-section {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-section input {
+  flex-grow: 1;
+  background-color: var(--bg-input);
+  border: 1px solid #2b364a;
+  color: var(--text-main);
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.search-section input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-section input:focus {
+  border-color: var(--color-primary);
+}
+
+.search-btn {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 0 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.search-btn:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Status / Contador */
+.stats-bar {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Grid de Pokémons */
+.pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Cards de Pokémon */
+.pokemon-card {
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  padding: 1rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ID do Pokémon (Canto superior direito) */
+.poke-id {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-weight: 900;
+  font-size: 0.9rem;
+  color: var(--type-color); /* Variavel injetada via JS */
+}
+
+/* Imagem e Círculo Colorido */
+.poke-img-container {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.poke-circle-bg {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: var(--type-color);
+  opacity: 0.9;
+  z-index: 1;
+}
+
+.poke-main-img {
+  position: relative;
+  z-index: 2;
+  height: 110px;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.3));
+}
+
+/* Rodapé do Card (Nome e Mini Sprite) */
+.poke-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: auto;
+}
+
+.poke-name {
+  color: var(--type-color);
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-transform: capitalize;
+  margin: 0;
+}
+
+.poke-mini-sprite {
+  width: 35px;
+  height: 35px;
+  image-rendering: pixelated;
+}
+
+/* Loading State */
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-primary);
+  font-size: 1.2rem;
+}
+
+.d-none {
+  display: none !important;
+}
+
+/* Botão Carregar Mais */
+.load-more-container {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.load-more-btn {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.load-more-btn:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .pokemon-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .pokemon-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 500px) {
+  .pokemon-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .search-section {
+    flex-direction: column;
+  }
+  .search-btn {
+    padding: 1rem;
+  }
+}

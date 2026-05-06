@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokedex Dark Theme</title>
+    <!-- FontAwesome para os ícones -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link href="style.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Topbar de Navegação -->
+      <header class="topbar">
+        <div class="nav-left">
+          <button class="nav-btn"><i class="fas fa-home"></i></button>
+        </div>
+        <div class="nav-right">
+          <button class="nav-btn"><i class="fab fa-github"></i></button>
+          <button class="nav-btn"><i class="fab fa-linkedin"></i></button>
+          <button class="nav-btn"><i class="fab fa-youtube"></i></button>
+        </div>
+      </header>
+
+      <!-- Linha de Mini Sprites (Decoração) -->
+      <div class="decorative-sprites">
+        <img
+          src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
+          alt="Bulbasaur"
+        />
+        <img
+          src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png"
+          alt="Charmander"
+        />
+        <img
+          src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png"
+          alt="Squirtle"
+        />
+        <img
+          src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png"
+          alt="Pikachu"
+        />
+      </div>
+
+      <!-- Barra de Pesquisa -->
+      <div class="search-section">
+        <input
+          type="text"
+          id="pokemon-filter"
+          placeholder="Procurar por nome ou ID"
+          autocomplete="off"
+        />
+        <button id="apply-filter" class="search-btn">
+          <i class="fas fa-search"></i> Procurar
+        </button>
+      </div>
+
+      <!-- Contador -->
+      <div class="stats-bar">
+        <i class="fas fa-circle-notch"></i>
+        <span id="total-count">...</span> Pokémons
+      </div>
+
+      <!-- Grid de Pokémons -->
+      <div id="pokemon-list" class="pokemon-grid"></div>
+
+      <!-- Feedback Visual de Carregamento -->
+      <div id="loading" class="loading-state d-none">
+        <i class="fas fa-spinner fa-spin"></i> Carregando...
+      </div>
+
+      <!-- Botão Carregar Mais -->
+      <div class="load-more-container">
+        <button id="load-more" class="load-more-btn">+ Carregar mais</button>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
